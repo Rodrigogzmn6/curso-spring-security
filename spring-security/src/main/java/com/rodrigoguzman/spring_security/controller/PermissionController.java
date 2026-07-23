@@ -3,7 +3,6 @@ package com.rodrigoguzman.spring_security.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/permissions")
 public class PermissionController {
-    @Autowired
-    IPermissionService permissionService;
+    final IPermissionService permissionService;
+
+    PermissionController(IPermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")

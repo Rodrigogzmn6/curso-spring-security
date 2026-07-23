@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +22,14 @@ import com.rodrigoguzman.spring_security.service.IUserService;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    @Autowired
-    IUserService userService;
+    final IUserService userService;
 
-    @Autowired
-    IRoleService roleService;
+    final IRoleService roleService;
+
+    UserController(IUserService userService, IRoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
+    }
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('CREATE')")

@@ -3,7 +3,6 @@ package com.rodrigoguzman.spring_security.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rodrigoguzman.spring_security.model.Role;
@@ -11,8 +10,11 @@ import com.rodrigoguzman.spring_security.repository.IRoleRepository;
 
 @Service
 public class RoleService implements IRoleService {
-    @Autowired
-    IRoleRepository roleRepository;
+    final IRoleRepository roleRepository;
+
+    RoleService(IRoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     public Role save(Role role) {

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +23,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequestMapping("/api/roles")
 public class RoleController {
-    @Autowired
-    IRoleService roleService;
+    final IRoleService roleService;
 
-    @Autowired
-    IPermissionService permissionService;
+    final IPermissionService permissionService;
+
+    RoleController(IRoleService roleService, IPermissionService permissionService) {
+        this.roleService = roleService;
+        this.permissionService = permissionService;
+    }
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN') and hasAuthority('CREATE')")

@@ -3,7 +3,6 @@ package com.rodrigoguzman.spring_security.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,11 @@ import com.rodrigoguzman.spring_security.repository.IUserRepository;
 
 @Service
 public class UserService implements IUserService {
-    @Autowired
-    IUserRepository userRepository;
+    final IUserRepository userRepository;
+
+    UserService(IUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserSec save(UserSec user) {
