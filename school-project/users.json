@@ -1,0 +1,29 @@
+{
+    "permissions": "",
+    "roles": [
+        {
+            "role": "Administrator"
+        },
+        {
+            "role": "Professor"
+        },
+        {
+            "role": "Student"
+        }
+    ],
+    "users": [
+        {
+            "username": "SuperAdmin",
+            "password": "SchoolAdmin123",
+            "enabled": true,
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true,
+            "rolesList": [
+                {
+                    "id": 1
+                }
+            ]
+        }
+    ]
+}
