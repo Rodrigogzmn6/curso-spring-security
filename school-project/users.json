@@ -24,6 +24,32 @@
                     "id": 1
                 }
             ]
+        },
+        {
+            "username": "Professor",
+            "password": "Professor123",
+            "enabled": true,
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true,
+            "rolesList": [
+                {
+                    "id": 1
+                }
+            ]
+        },
+        {
+            "username": "Student",
+            "password": "Student123",
+            "enabled": true,
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true,
+            "rolesList": [
+                {
+                    "id": 2
+                }
+            ]
         }
     ]
 }
