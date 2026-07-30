@@ -1,10 +1,7 @@
 package com.rodrigoguzman.school_project.controller;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rodrigoguzman.school_project.model.Permission;
+import com.rodrigoguzman.school_project.dto.RoleResponseDTO;
 import com.rodrigoguzman.school_project.model.Role;
 import com.rodrigoguzman.school_project.service.IPermissionService;
 import com.rodrigoguzman.school_project.service.IRoleService;
@@ -35,42 +32,31 @@ public class RoleController {
 
     @PostMapping()
     @PreAuthorize("hasRole('Administrator')")
-    public ResponseEntity<Role> createRole(@RequestBody Role role) {
-        Set<Permission> permissionsList = new HashSet<Permission>();
-        Permission readPermission;
+    public ResponseEntity<RoleResponseDTO> createRole(@RequestBody Role role) {
+        RoleResponseDTO createdRole = service.createRole(role);
 
-        for (Permission permission : role.getPermissionsList()) {
-            readPermission = permissionService.findPermissionById(permission.getId()).orElse(null);
-
-            if (readPermission != null) {
-                permissionsList.add(readPermission);
-            }
-        }
-
-        role.setPermissionsList(permissionsList);
-        Role createdRole = service.createRole(role);
         return ResponseEntity.ok(createdRole);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('R_Roles')")
-    public ResponseEntity<List<Role>> getAllRoles() {
-        List<Role> roles = service.findAllRoles();
-        return ResponseEntity.ok(roles);
+    public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
+        List<RoleResponseDTO> foundRoles = service.findAllRoles();
+        return ResponseEntity.ok(foundRoles);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('R_Roles')")
-    public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
-        Optional<Role> role = service.findRoleById(id);
-        return role.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<RoleResponseDTO> getRoleById(@PathVariable Long id) {
+        Optional<RoleResponseDTO> foundRole = service.findRoleById(id);
+        return ResponseEntity.ok(foundRole.orElse(null));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('U_Roles')")
-    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
-        service.updateRole(id, role);
-        return ResponseEntity.ok(role);
+    public ResponseEntity<RoleResponseDTO> updateRole(@PathVariable Long id, @RequestBody Role role) {
+        RoleResponseDTO updatedRole = service.updateRole(id, role);
+        return ResponseEntity.ok(updatedRole);
     }
 
     @DeleteMapping("/{id}")

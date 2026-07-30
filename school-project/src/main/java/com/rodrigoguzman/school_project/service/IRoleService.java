@@ -3,16 +3,17 @@ package com.rodrigoguzman.school_project.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.rodrigoguzman.school_project.dto.RoleResponseDTO;
 import com.rodrigoguzman.school_project.model.Role;
 
 public interface IRoleService {
-    Role createRole(Role role);
+    RoleResponseDTO createRole(Role role);
 
-    List<Role> findAllRoles();
+    List<RoleResponseDTO> findAllRoles();
 
-    Optional<Role> findRoleById(Long id);
+    Optional<RoleResponseDTO> findRoleById(Long id);
 
-    Role updateRole(Long id, Role role);
+    RoleResponseDTO updateRole(Long id, Role role);
 
     void deleteRole(Long id);
 }
