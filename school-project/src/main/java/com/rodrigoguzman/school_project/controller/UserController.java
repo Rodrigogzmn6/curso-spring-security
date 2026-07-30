@@ -1,9 +1,7 @@
 package com.rodrigoguzman.school_project.controller;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rodrigoguzman.school_project.model.Role;
+import com.rodrigoguzman.school_project.dto.UserRegistryDTO;
+import com.rodrigoguzman.school_project.dto.UserRegistryResponesDTO;
 import com.rodrigoguzman.school_project.model.SchoolUser;
 import com.rodrigoguzman.school_project.service.IRoleService;
 import com.rodrigoguzman.school_project.service.IUserService;
@@ -35,28 +34,8 @@ public class UserController {
 
     @PostMapping()
     @PreAuthorize("hasRole('Administrator')")
-    public ResponseEntity<SchoolUser> createUser(@RequestBody SchoolUser user) {
-        Set<Role> rolesList = new HashSet<Role>();
-        Role readRole;
-
-        // Encrypt password
-        user.setPassword(service.encryptPassword(user.getPassword()));
-
-        for (Role role : user.getRolesList()) {
-            readRole = roleService.findRoleById(role.getId()).orElse(null);
-
-            if (readRole != null) {
-                rolesList.add(readRole);
-            }
-        }
-
-        if (!rolesList.isEmpty()) {
-            user.setRolesList(rolesList);
-            SchoolUser createdUser = service.createUser(user);
-            return ResponseEntity.ok(createdUser);
-        }
-
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<UserRegistryResponesDTO> createUser(@RequestBody UserRegistryDTO user) {
+        return ResponseEntity.ok(service.createUser(user));
     }
 
     @GetMapping

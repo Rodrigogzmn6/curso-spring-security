@@ -3,10 +3,12 @@ package com.rodrigoguzman.school_project.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.rodrigoguzman.school_project.dto.UserRegistryDTO;
+import com.rodrigoguzman.school_project.dto.UserRegistryResponesDTO;
 import com.rodrigoguzman.school_project.model.SchoolUser;
 
 public interface IUserService {
-    SchoolUser createUser(SchoolUser user);
+    UserRegistryResponesDTO createUser(UserRegistryDTO user);
 
     List<SchoolUser> findAllUsers();
 
