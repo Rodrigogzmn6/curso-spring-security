@@ -4,24 +4,24 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import com.rodrigoguzman.school_project.dto.UserRegistryDTO;
-import com.rodrigoguzman.school_project.dto.UserRegistryResponesDTO;
+import com.rodrigoguzman.school_project.dto.SchoolUserRequestDTO;
+import com.rodrigoguzman.school_project.dto.SchoolUserResponseDTO;
 import com.rodrigoguzman.school_project.model.Student;
 import com.rodrigoguzman.school_project.repository.IRoleRepository;
 import com.rodrigoguzman.school_project.repository.IStudentRepository;
-import com.rodrigoguzman.school_project.repository.IUserRepository;
+import com.rodrigoguzman.school_project.repository.ISecuredUserRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class StudentService implements IStudentService {
     final IStudentRepository repository;
-    final IUserService userService;
-    final IUserRepository userRepository;
+    final ISecuredUserService userService;
+    final ISecuredUserRepository userRepository;
     final IRoleRepository roleRepository;
 
-    StudentService(IStudentRepository repository, IUserService userService, IRoleRepository roleRepository,
-            IUserRepository userRepository) {
+    StudentService(IStudentRepository repository, ISecuredUserService userService, IRoleRepository roleRepository,
+            ISecuredUserRepository userRepository) {
         this.roleRepository = roleRepository;
         this.userService = userService;
         this.repository = repository;
@@ -30,7 +30,7 @@ public class StudentService implements IStudentService {
 
     @Override
     @Transactional
-    public UserRegistryResponesDTO createStudent(UserRegistryDTO user) {
+    public SchoolUserResponseDTO createStudent(SchoolUserRequestDTO user) {
         user.setRoles(Set
                 .of(roleRepository.findByRole("Student").orElseThrow(() -> new RuntimeException("Role not found"))));
 
@@ -44,7 +44,7 @@ public class StudentService implements IStudentService {
                 .courses(user.getCourses())
                 .build());
 
-        return UserRegistryResponesDTO.builder()
+        return SchoolUserResponseDTO.builder()
                 .username(user.getUsername())
                 .name(user.getName())
                 .dni(user.getDni())

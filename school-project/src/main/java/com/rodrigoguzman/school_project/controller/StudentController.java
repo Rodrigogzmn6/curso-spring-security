@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rodrigoguzman.school_project.dto.UserRegistryDTO;
-import com.rodrigoguzman.school_project.dto.UserRegistryResponesDTO;
+import com.rodrigoguzman.school_project.dto.SchoolUserRequestDTO;
+import com.rodrigoguzman.school_project.dto.SchoolUserResponseDTO;
 import com.rodrigoguzman.school_project.service.IStudentService;
 
 @RestController
@@ -22,7 +22,7 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<UserRegistryResponesDTO> createStudent(@RequestBody UserRegistryDTO user) {
+    public ResponseEntity<SchoolUserResponseDTO> createStudent(@RequestBody SchoolUserRequestDTO user) {
         return ResponseEntity.ok(service.createStudent(user));
     }
 

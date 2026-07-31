@@ -1,7 +1,6 @@
 package com.rodrigoguzman.school_project.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,55 +13,54 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rodrigoguzman.school_project.dto.UserRegistryDTO;
-import com.rodrigoguzman.school_project.dto.UserRegistryResponesDTO;
-import com.rodrigoguzman.school_project.model.SchoolUser;
+import com.rodrigoguzman.school_project.dto.SecuredUserRequestDTO;
+import com.rodrigoguzman.school_project.dto.SecuredUserResponseDTO;
 import com.rodrigoguzman.school_project.service.IRoleService;
-import com.rodrigoguzman.school_project.service.IUserService;
+import com.rodrigoguzman.school_project.service.ISecuredUserService;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-    final IUserService service;
+    final ISecuredUserService service;
 
     final IRoleService roleService;
 
-    UserController(IUserService service, IRoleService roleService) {
+    UserController(ISecuredUserService service, IRoleService roleService) {
         this.service = service;
         this.roleService = roleService;
     }
 
     @PostMapping()
     @PreAuthorize("hasRole('Administrator')")
-    public ResponseEntity<UserRegistryResponesDTO> createUser(@RequestBody UserRegistryDTO user) {
-        return ResponseEntity.ok(service.createUser(user));
+    public ResponseEntity<SecuredUserResponseDTO> createUser(@RequestBody SecuredUserRequestDTO user) {
+        return ResponseEntity.ok(service.createSecuredUser(user));
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('R_Users')")
-    public ResponseEntity<List<SchoolUser>> getAllRoles() {
-        List<SchoolUser> users = service.findAllUsers();
+    public ResponseEntity<List<SecuredUserResponseDTO>> getAllSecuredUsers() {
+        List<SecuredUserResponseDTO> users = service.findAllSecuredUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('R_Users')")
-    public ResponseEntity<SchoolUser> getRoleById(@PathVariable Long id) {
-        Optional<SchoolUser> user = service.findUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<SecuredUserResponseDTO> getSecuredUserById(@PathVariable Long id) {
+        SecuredUserResponseDTO user = service.findSecuredUserById(id).orElse(null);
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('U_Users')")
-    public ResponseEntity<SchoolUser> updateUser(@PathVariable Long id, @RequestBody SchoolUser user) {
-        SchoolUser updatedUser = service.updateUser(id, user);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<SecuredUserResponseDTO> updateSecuredUser(@PathVariable Long id,
+            @RequestBody SecuredUserRequestDTO user) {
+        return ResponseEntity.ok(service.updateSecuredUser(id, user));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('D_Users')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        service.deleteUser(id);
+        service.deleteSecuredUser(id);
         return ResponseEntity.noContent().build();
     }
 }

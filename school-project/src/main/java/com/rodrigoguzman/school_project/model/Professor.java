@@ -34,7 +34,7 @@ public class Professor {
 
     @OneToOne
     @JoinColumn(name = "professor_id", referencedColumnName = "id")
-    private SchoolUser schoolUser;
+    private SecuredUser schoolUser;
 
     @OneToMany(mappedBy = "professor")
     @Builder.Default

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.rodrigoguzman.school_project.dto.PermissionResponseDTO;
 import com.rodrigoguzman.school_project.dto.RoleResponseDTO;
 import com.rodrigoguzman.school_project.model.Permission;
 import com.rodrigoguzman.school_project.model.Role;
@@ -27,15 +26,11 @@ public class RoleService implements IRoleService {
     @Override
     public RoleResponseDTO createRole(Role role) {
         Set<Permission> permissionsList = new HashSet<>();
-        Set<PermissionResponseDTO> permissionsListDTO = new HashSet<>();
 
         for (Permission p : role.getPermissionsList()) {
             Permission foundPermission = permissionRepository.findByPermission(p.getPermission())
                     .orElseThrow(() -> new RuntimeException("Permission not found"));
             permissionsList.add(foundPermission);
-            permissionsListDTO.add(PermissionResponseDTO.builder()
-                    .permission(foundPermission.getPermission())
-                    .build());
         }
 
         role.setPermissionsList(permissionsList);
@@ -44,7 +39,7 @@ public class RoleService implements IRoleService {
 
         return RoleResponseDTO.builder()
                 .role(role.getRole())
-                .permissionsList(permissionsListDTO)
+                .permissionsList(PermissionsUtils.convertPermissionsToDTO(permissionsList))
                 .build();
     }
 
@@ -75,15 +70,11 @@ public class RoleService implements IRoleService {
     @Override
     public RoleResponseDTO updateRole(Long id, Role role) {
         Set<Permission> permissionsList = new HashSet<>();
-        Set<PermissionResponseDTO> permissionsListDTO = new HashSet<>();
 
         for (Permission p : role.getPermissionsList()) {
             Permission foundPermission = permissionRepository.findByPermission(p.getPermission())
                     .orElseThrow(() -> new RuntimeException("Permission not found"));
             permissionsList.add(foundPermission);
-            permissionsListDTO.add(PermissionResponseDTO.builder()
-                    .permission(foundPermission.getPermission())
-                    .build());
         }
 
         Role roleToEdit = repository.findById(id)
@@ -99,7 +90,7 @@ public class RoleService implements IRoleService {
 
         return RoleResponseDTO.builder()
                 .role(roleToEdit.getRole())
-                .permissionsList(permissionsListDTO)
+                .permissionsList(PermissionsUtils.convertPermissionsToDTO(permissionsList))
                 .build();
     }
 

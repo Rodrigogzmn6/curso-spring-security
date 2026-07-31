@@ -1,10 +1,10 @@
 package com.rodrigoguzman.school_project.service;
 
-import com.rodrigoguzman.school_project.dto.UserRegistryDTO;
-import com.rodrigoguzman.school_project.dto.UserRegistryResponesDTO;
+import com.rodrigoguzman.school_project.dto.SchoolUserRequestDTO;
+import com.rodrigoguzman.school_project.dto.SchoolUserResponseDTO;
 
 public interface IStudentService {
-    UserRegistryResponesDTO createStudent(UserRegistryDTO user);
+    SchoolUserResponseDTO createStudent(SchoolUserRequestDTO user);
 
     void deleteStudent(Long id);
 }

@@ -17,17 +17,18 @@ import org.springframework.stereotype.Service;
 
 import com.rodrigoguzman.school_project.dto.AuthLoginRequestDTO;
 import com.rodrigoguzman.school_project.dto.AuthResponseDTO;
-import com.rodrigoguzman.school_project.model.SchoolUser;
-import com.rodrigoguzman.school_project.repository.IUserRepository;
+import com.rodrigoguzman.school_project.model.SecuredUser;
+import com.rodrigoguzman.school_project.repository.ISecuredUserRepository;
 import com.rodrigoguzman.school_project.utils.JwtUtils;
 
 @Service
 public class UserDetailsServiceImplementation implements UserDetailsService {
-    final IUserRepository repository;
+    final ISecuredUserRepository repository;
     final JwtUtils jwtUtils;
     final PasswordEncoder passwordEncoder;
 
-    UserDetailsServiceImplementation(IUserRepository repository, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
+    UserDetailsServiceImplementation(ISecuredUserRepository repository, JwtUtils jwtUtils,
+            PasswordEncoder passwordEncoder) {
         this.jwtUtils = jwtUtils;
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
@@ -39,7 +40,7 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
         // The UserDetails object is used by the Spring Security framework to
         // authenticate and authorize users
         // Get user from database
-        SchoolUser schoolUser = repository.findSchoolUserEntityByUsername(username)
+        SecuredUser schoolUser = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Create permissions list
