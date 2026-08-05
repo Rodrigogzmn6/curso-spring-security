@@ -16,19 +16,17 @@ import com.rodrigoguzman.school_project.dto.RoleResponseDTO;
 import com.rodrigoguzman.school_project.model.Role;
 import com.rodrigoguzman.school_project.service.IPermissionService;
 import com.rodrigoguzman.school_project.service.IRoleService;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/v1/roles")
+@AllArgsConstructor
 public class RoleController {
     final IRoleService service;
-
     final IPermissionService permissionService;
-
-    RoleController(IRoleService service, IPermissionService permissionService) {
-        this.service = service;
-        this.permissionService = permissionService;
-    }
 
     @PostMapping()
     @PreAuthorize("hasRole('Administrator')")

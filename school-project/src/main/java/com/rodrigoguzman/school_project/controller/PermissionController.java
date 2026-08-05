@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rodrigoguzman.school_project.dto.PermissionResponseDTO;
 import com.rodrigoguzman.school_project.model.Permission;
 import com.rodrigoguzman.school_project.service.IPermissionService;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/permissions")
+@AllArgsConstructor
 public class PermissionController {
     final IPermissionService service;
-
-    PermissionController(IPermissionService service) {
-        this.service = service;
-    }
 
     @PostMapping()
     // @PreAuthorize("hasRole('Administrator')")

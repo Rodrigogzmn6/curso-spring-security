@@ -1,65 +1,140 @@
 package com.rodrigoguzman.school_project.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.rodrigoguzman.school_project.dto.SchoolUserRequestDTO;
 import com.rodrigoguzman.school_project.dto.SchoolUserResponseDTO;
+import com.rodrigoguzman.school_project.dto.SecuredUserRequestDTO;
+import com.rodrigoguzman.school_project.model.Role;
+import com.rodrigoguzman.school_project.model.SecuredUser;
 import com.rodrigoguzman.school_project.model.Student;
 import com.rodrigoguzman.school_project.repository.IRoleRepository;
 import com.rodrigoguzman.school_project.repository.IStudentRepository;
+import com.rodrigoguzman.school_project.utils.RolesUtils;
 import com.rodrigoguzman.school_project.repository.ISecuredUserRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class StudentService implements IStudentService {
     final IStudentRepository repository;
     final ISecuredUserService userService;
-    final ISecuredUserRepository userRepository;
     final IRoleRepository roleRepository;
-
-    StudentService(IStudentRepository repository, ISecuredUserService userService, IRoleRepository roleRepository,
-            ISecuredUserRepository userRepository) {
-        this.roleRepository = roleRepository;
-        this.userService = userService;
-        this.repository = repository;
-        this.userRepository = userRepository;
-    }
+    final ISecuredUserRepository userRepository;
 
     @Override
     @Transactional
-    public SchoolUserResponseDTO createStudent(SchoolUserRequestDTO user) {
-        user.setRoles(Set
-                .of(roleRepository.findByRole("Student").orElseThrow(() -> new RuntimeException("Role not found"))));
+    public SchoolUserResponseDTO createStudent(SchoolUserRequestDTO student) {
+        Set<Role> studentRole = Set
+                .of(roleRepository.findByRole("Student")
+                        .orElse(roleRepository.save(Role.builder().role("Student").build())));
 
-        userService.createUser(user);
+        SecuredUserRequestDTO studentUser = SecuredUserRequestDTO.builder()
+                .username(student.username())
+                .password(student.password())
+                .roles(studentRole)
+                .build();
+
+        userService.createSecuredUser(studentUser);
+
+        Optional<SecuredUser> securedUser = userRepository
+                .findByUsername(studentUser.username());
 
         repository.save(Student.builder()
-                .name(user.getName())
-                .dni(user.getDni())
-                .schoolUser(userRepository.findSchoolUserEntityByUsername(user.getUsername())
-                        .orElseThrow(() -> new RuntimeException("User not found")))
-                .courses(user.getCourses())
+                .name(student.name())
+                .dni(student.dni())
+                .schoolUser(
+                        securedUser.orElseThrow(() -> new RuntimeException("User not found")))
+                .courses(student.courses())
                 .build());
 
         return SchoolUserResponseDTO.builder()
-                .username(user.getUsername())
-                .name(user.getName())
-                .dni(user.getDni())
-                .roles(user.getRoles())
-                .courses(user.getCourses())
+                .username(student.username())
+                .name(student.name())
+                .dni(student.dni())
+                .roles(RolesUtils.convertRolesToDTO(studentRole))
+                .courses(student.courses())
                 .build();
     }
 
     @Override
-    @Transactional
-    public void deleteStudent(Long id) {
-        Student student = repository.findById(id)
+    public List<SchoolUserResponseDTO> findAllStudents() {
+        return repository.findAll().stream()
+                .map(student -> SchoolUserResponseDTO.builder()
+                        .username(student.getSchoolUser().getUsername())
+                        .name(student.getName())
+                        .dni(student.getDni())
+                        .courses(student.getCourses())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<SchoolUserResponseDTO> findStudentById(Long id) {
+        Optional<Student> foundStudent = repository.findById(id);
+
+        if (foundStudent.isPresent()) {
+            return Optional.of(SchoolUserResponseDTO.builder()
+                    .username(foundStudent.get().getSchoolUser().getUsername())
+                    .name(foundStudent.get().getName())
+                    .dni(foundStudent.get().getDni())
+                    .courses(foundStudent.get().getCourses())
+                    .build());
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public SchoolUserResponseDTO updateStudent(Long id, SchoolUserRequestDTO student) {
+        Set<Role> rolesList = new HashSet<>();
+
+        for (Role r : student.roles()) {
+            Role foundRole = roleRepository.findByRole(r.getRole())
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+
+            rolesList.add(foundRole);
+        }
+
+        // TODO: Chequear que existan los cursos
+
+        Student studentToEdit = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
-        Long userId = student.getSchoolUser().getId();
-        repository.delete(student); // 1. remove student profile
-        userService.deleteUser(userId); // 2. remove login account
+
+        studentToEdit.setName(student.name() != null && !student.name().isEmpty()
+                ? student.name()
+                : studentToEdit.getName());
+        studentToEdit.setDni(student.dni() != null && !student.dni().isEmpty()
+                ? student.dni()
+                : studentToEdit.getDni());
+        studentToEdit.setCourses(student.courses());
+
+        repository.save(studentToEdit);
+
+        return SchoolUserResponseDTO.builder()
+                .username(studentToEdit.getSchoolUser().getUsername())
+                .name(studentToEdit.getName())
+                .dni(studentToEdit.getDni())
+                .courses(studentToEdit.getCourses())
+                .roles(RolesUtils.convertRolesToDTO(rolesList))
+                .build();
+    }
+
+    @Override
+    public void deleteStudent(Long id) {
+        Student studentToDelete = repository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
+
+        if (studentToDelete != null) {
+            repository.deleteById(id);
+            userService.deleteSecuredUser(studentToDelete.getSchoolUser().getId());
+        }
     }
 }

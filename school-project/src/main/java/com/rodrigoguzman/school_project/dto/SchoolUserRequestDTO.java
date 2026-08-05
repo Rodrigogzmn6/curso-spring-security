@@ -5,17 +5,14 @@ import java.util.Set;
 import com.rodrigoguzman.school_project.model.Course;
 import com.rodrigoguzman.school_project.model.Role;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class SchoolUserRequestDTO {
-    private String username, password, name, dni;
-    private Set<Role> roles;
-    private Set<Course> courses;
+public record SchoolUserRequestDTO(
+        @NotNull @NotBlank String username,
+        @NotNull @NotBlank String password,
+        @NotNull @NotBlank String name,
+        @NotNull @NotBlank String dni,
+        @NotNull Set<Role> roles,
+        @NotNull Set<Course> courses) {
 }

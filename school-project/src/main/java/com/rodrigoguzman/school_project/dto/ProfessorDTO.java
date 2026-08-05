@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record PermissionResponseDTO(
-        @NotNull @NotBlank String permission) {
+public record ProfessorDTO(
+        @NotNull @NotBlank String name,
+        @NotNull @NotBlank String dni) {
+
 }

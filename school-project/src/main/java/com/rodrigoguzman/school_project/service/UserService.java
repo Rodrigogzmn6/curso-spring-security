@@ -27,13 +27,13 @@ public class UserService implements ISecuredUserService {
 
     @Override
     public SecuredUserResponseDTO createSecuredUser(SecuredUserRequestDTO user) {
-        if (user.getRoles().isEmpty())
+        if (user.roles().isEmpty())
             throw new RuntimeException("Error: Roles not found");
 
         Set<Role> rolesList = new HashSet<Role>();
         Role readRole;
 
-        for (Role role : user.getRoles()) {
+        for (Role role : user.roles()) {
             readRole = roleRepository.findByRole(role.getRole()).orElse(null);
 
             if (readRole != null) {
@@ -42,12 +42,12 @@ public class UserService implements ISecuredUserService {
         }
 
         // Encrypt password
-        user.setPassword(this.encryptPassword(user.getPassword()));
+        String encryptedPassword = this.encryptPassword(user.password());
 
         repository.save(
                 SecuredUser.builder()
-                        .username(user.getUsername())
-                        .password(user.getPassword())
+                        .username(user.username())
+                        .password(encryptedPassword)
                         .enabled(true)
                         .accountNonExpired(true)
                         .accountNonLocked(true)
@@ -56,7 +56,7 @@ public class UserService implements ISecuredUserService {
                         .build());
 
         return SecuredUserResponseDTO.builder()
-                .username(user.getUsername())
+                .username(user.username())
                 .roles(RolesUtils.convertRolesToDTO(rolesList))
                 .build();
     }
@@ -101,19 +101,19 @@ public class UserService implements ISecuredUserService {
     public SecuredUserResponseDTO updateSecuredUser(Long id, SecuredUserRequestDTO user) {
         SecuredUser userToEdit = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
-        userToEdit.setUsername(user.getUsername() != null &&
-                !user.getUsername().isEmpty()
-                        ? user.getUsername()
+        userToEdit.setUsername(user.username() != null &&
+                !user.username().isEmpty()
+                        ? user.username()
                         : userToEdit.getUsername());
 
-        userToEdit.setPassword(user.getPassword() != null &&
-                !user.getPassword().isEmpty()
-                        ? user.getPassword()
+        userToEdit.setPassword(user.password() != null &&
+                !user.password().isEmpty()
+                        ? user.password()
                         : userToEdit.getPassword());
 
         Set<Role> newRolesList = new HashSet<Role>();
 
-        for (Role role : user.getRoles()) {
+        for (Role role : user.roles()) {
             Role readRole = roleRepository.findByRole(role.getRole()).orElse(null);
             if (readRole != null) {
                 newRolesList.add(readRole);
@@ -140,20 +140,4 @@ public class UserService implements ISecuredUserService {
     public String encryptPassword(String password) {
         return new BCryptPasswordEncoder().encode(password);
     }
-
-    // SecuredUser updatedUser = SecuredUser.builder()
-    // .id(userToEdit.getId())
-    // .username(newUsername)
-    // .password(newPassword)
-    // .enabled(user.isEnabled())
-    // .accountNonExpired(user.isAccountNonExpired())
-    // .accountNonLocked(user.isAccountNonLocked())
-    // .credentialsNonExpired(user.isCredentialsNonExpired())
-    // .rolesList(newRolesList)
-    // .build();
-
-    // repository.save(updatedUser);
-    // return updatedUser;
-    // }
-
 }

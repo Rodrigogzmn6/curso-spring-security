@@ -21,18 +21,14 @@ import com.rodrigoguzman.school_project.model.SecuredUser;
 import com.rodrigoguzman.school_project.repository.ISecuredUserRepository;
 import com.rodrigoguzman.school_project.utils.JwtUtils;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class UserDetailsServiceImplementation implements UserDetailsService {
     final ISecuredUserRepository repository;
     final JwtUtils jwtUtils;
     final PasswordEncoder passwordEncoder;
-
-    UserDetailsServiceImplementation(ISecuredUserRepository repository, JwtUtils jwtUtils,
-            PasswordEncoder passwordEncoder) {
-        this.jwtUtils = jwtUtils;
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -18,17 +18,14 @@ import com.rodrigoguzman.school_project.dto.SecuredUserResponseDTO;
 import com.rodrigoguzman.school_project.service.IRoleService;
 import com.rodrigoguzman.school_project.service.ISecuredUserService;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @RequestMapping("/api/v1/users")
+@AllArgsConstructor
 public class UserController {
     final ISecuredUserService service;
-
     final IRoleService roleService;
-
-    UserController(ISecuredUserService service, IRoleService roleService) {
-        this.service = service;
-        this.roleService = roleService;
-    }
 
     @PostMapping()
     @PreAuthorize("hasRole('Administrator')")

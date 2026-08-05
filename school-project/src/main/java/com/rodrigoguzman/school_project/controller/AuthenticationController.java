@@ -10,22 +10,19 @@ import com.rodrigoguzman.school_project.dto.AuthResponseDTO;
 import com.rodrigoguzman.school_project.service.UserDetailsServiceImplementation;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@AllArgsConstructor
 public class AuthenticationController {
     private final UserDetailsServiceImplementation userDetailsService;
-
-    AuthenticationController(UserDetailsServiceImplementation userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthLoginRequestDTO userRequest) {
         return new ResponseEntity<>(this.userDetailsService.loginUser(userRequest), HttpStatus.OK);
     }
-
 }

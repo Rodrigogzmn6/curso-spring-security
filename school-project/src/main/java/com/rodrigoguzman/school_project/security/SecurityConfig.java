@@ -20,15 +20,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import com.rodrigoguzman.school_project.security.filter.JwtTokenValidator;
 import com.rodrigoguzman.school_project.utils.JwtUtils;
 
+import lombok.AllArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
     private final JwtUtils jwtUtils;
-
-    public SecurityConfig(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
-    }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

@@ -10,5 +10,4 @@ import lombok.Builder;
 public record RoleResponseDTO(
         @NotNull @NotBlank String role,
         @NotNull @NotBlank Set<PermissionResponseDTO> permissionsList) {
-
 }
