@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 // import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,28 +29,28 @@ public class PermissionController {
     final IPermissionService service;
 
     @PostMapping()
-    // @PreAuthorize("hasRole('Administrator')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<PermissionResponseDTO> createPermission(@RequestBody Permission permission) {
         PermissionResponseDTO createdPermission = service.createPermission(permission);
         return ResponseEntity.ok(createdPermission);
     }
 
     @GetMapping
-    // @PreAuthorize("hasAuthority('R_Permissions')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<List<PermissionResponseDTO>> getAllPermissions() {
         List<PermissionResponseDTO> foundPermissions = service.findAllPermissions();
         return ResponseEntity.ok(foundPermissions);
     }
 
     @GetMapping("/{id}")
-    // @PreAuthorize("hasAuthority('R_Permissions')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<PermissionResponseDTO> getPermissionById(@PathVariable Long id) {
         Optional<PermissionResponseDTO> foundPermission = service.findPermissionById(id);
         return ResponseEntity.ok(foundPermission.orElse(null));
     }
 
     @PutMapping("/{id}")
-    // @PreAuthorize("hasAuthority('U_Permissions')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<PermissionResponseDTO> updatePermission(@PathVariable Long id,
             @RequestBody Permission permission) {
         PermissionResponseDTO updatedPermission = service.updatePermission(id, permission);
@@ -57,7 +58,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{id}")
-    // @PreAuthorize("hasAuthority('D_Permissions')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
         service.deletePermission(id);
         return ResponseEntity.noContent().build();

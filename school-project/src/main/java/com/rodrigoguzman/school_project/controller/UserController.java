@@ -34,28 +34,28 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('R_Users')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<List<SecuredUserResponseDTO>> getAllSecuredUsers() {
         List<SecuredUserResponseDTO> users = service.findAllSecuredUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('R_Users')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<SecuredUserResponseDTO> getSecuredUserById(@PathVariable Long id) {
         SecuredUserResponseDTO user = service.findSecuredUserById(id).orElse(null);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('U_Users')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<SecuredUserResponseDTO> updateSecuredUser(@PathVariable Long id,
             @RequestBody SecuredUserRequestDTO user) {
         return ResponseEntity.ok(service.updateSecuredUser(id, user));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('D_Users')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         service.deleteSecuredUser(id);
         return ResponseEntity.noContent().build();

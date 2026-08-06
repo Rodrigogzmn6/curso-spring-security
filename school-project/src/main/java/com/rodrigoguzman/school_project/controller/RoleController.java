@@ -37,28 +37,28 @@ public class RoleController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('R_Roles')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
         List<RoleResponseDTO> foundRoles = service.findAllRoles();
         return ResponseEntity.ok(foundRoles);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('R_Roles')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<RoleResponseDTO> getRoleById(@PathVariable Long id) {
         Optional<RoleResponseDTO> foundRole = service.findRoleById(id);
         return ResponseEntity.ok(foundRole.orElse(null));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('U_Roles')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<RoleResponseDTO> updateRole(@PathVariable Long id, @RequestBody Role role) {
         RoleResponseDTO updatedRole = service.updateRole(id, role);
         return ResponseEntity.ok(updatedRole);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('D_Roles')")
+    @PreAuthorize("hasRole('Administrator')")
     public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
         service.deleteRole(id);
         return ResponseEntity.noContent().build();
