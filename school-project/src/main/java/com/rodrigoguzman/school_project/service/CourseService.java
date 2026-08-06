@@ -31,9 +31,12 @@ public class CourseService implements ICourseService {
 
     @Override
     public CourseResponseDTO createCourse(CourseRequestDTO course) {
+        Optional<Professor> professor = Optional.empty();
 
-        Optional<Professor> professor = professorRepository
-                .findByDni(course.professor().getDni());
+        if (course.professor() != null) {
+            professor = professorRepository
+                    .findByDni(course.professor().getDni());
+        }
 
         Set<Student> students = new HashSet<>();
 
@@ -68,26 +71,82 @@ public class CourseService implements ICourseService {
 
     @Override
     public Optional<CourseResponseDTO> findCourseById(Long id) {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return repository.findById(id).map(foundCourse -> CourseResponseDTO.builder()
+                .name(foundCourse.getName())
+                .professor(foundCourse.getProfessor() != null ? ProfessorDTO.builder()
+                        .name(foundCourse.getProfessor().getName())
+                        .dni(foundCourse.getProfessor().getDni())
+                        .build() : ProfessorDTO.builder().build())
+                .students(foundCourse.getStudents().stream()
+                        .map(student -> StudentDTO.builder()
+                                .name(student.getName())
+                                .dni(student.getDni())
+                                .build())
+                        .collect(Collectors.toSet()))
+                .build());
     }
 
     @Override
     public CourseResponseDTO updateCourse(Long id, CourseRequestDTO course) {
-        // TODO Auto-generated method stub
-        return null;
+        Course foundCourse = repository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+
+        if (course.name() != null && !course.name().isEmpty()) {
+            foundCourse.setName(course.name());
+        }
+
+        if (course.professor() != null) {
+            professorRepository.findByDni(course.professor().getDni())
+                    .ifPresent(foundCourse::setProfessor);
+        }
+
+        if (course.students() != null) {
+            Set<Student> students = new HashSet<>();
+            for (Student student : course.students()) {
+                studentRepository.findByDni(student.getDni()).ifPresent(students::add);
+            }
+            foundCourse.setStudents(students);
+        }
+
+        repository.save(foundCourse);
+
+        return CourseResponseDTO.builder()
+                .name(foundCourse.getName())
+                .professor(foundCourse.getProfessor() != null ? ProfessorDTO.builder()
+                        .name(foundCourse.getProfessor().getName())
+                        .dni(foundCourse.getProfessor().getDni())
+                        .build() : ProfessorDTO.builder().build())
+                .students(foundCourse.getStudents().stream()
+                        .map(student -> StudentDTO.builder()
+                                .name(student.getName())
+                                .dni(student.getDni())
+                                .build())
+                        .collect(Collectors.toSet()))
+                .build();
     }
 
     @Override
     public void deleteCourse(Long id) {
-        // TODO Auto-generated method stub
-
+        repository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+        repository.deleteById(id);
     }
 
     @Override
     public List<CourseResponseDTO> findAllCourses() {
-        // TODO Auto-generated method stub
-        return null;
+        return repository.findAll().stream()
+                .map(course -> CourseResponseDTO.builder()
+                        .name(course.getName())
+                        .professor(course.getProfessor() != null ? ProfessorDTO.builder()
+                                .name(course.getProfessor().getName())
+                                .dni(course.getProfessor().getDni())
+                                .build() : ProfessorDTO.builder().build())
+                        .students(course.getStudents().stream()
+                                .map(student -> StudentDTO.builder()
+                                        .name(student.getName())
+                                        .dni(student.getDni())
+                                        .build())
+                                .collect(Collectors.toSet()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }
